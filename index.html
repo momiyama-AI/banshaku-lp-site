@@ -3,59 +3,243 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>平日の晩酌を、ちょっと良くする</title>
-  <meta name="description" content="晩酌グッズとお酒まわりのレビューLPを公開する準備中ページです。">
+  <title>晩酌ラボ | 晩酌グッズ・お酒レビューまとめ</title>
+  <meta name="description" content="平日の一杯をちょっと良くする、晩酌グッズとお酒レビューのまとめページです。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="晩酌ラボ | 晩酌グッズ・お酒レビューまとめ">
+  <meta property="og:description" content="真夏日の家飲み向けグッズ比較、日本酒飲み比べなど、晩酌を少し良くする候補を整理しています。">
+  <meta property="og:image" content="https://banshaku-lp-site.pages.dev/assets/og/prime-day-banshaku-cooling-2026.png">
+  <meta property="og:url" content="https://banshaku-lp-site.pages.dev/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="晩酌ラボ | 晩酌グッズ・お酒レビューまとめ">
+  <meta name="twitter:description" content="平日の一杯をちょっと良くする、晩酌グッズとお酒レビューのまとめページです。">
+  <meta name="twitter:image" content="https://banshaku-lp-site.pages.dev/assets/og/prime-day-banshaku-cooling-2026.png">
   <style>
     :root {
       color-scheme: dark;
       --bg: #10151f;
+      --panel: #182030;
+      --panel-2: #132018;
       --text: #f7f2e8;
       --muted: #c9c1b1;
-      --amber: #d89b43;
+      --amber: #e4a64e;
+      --green: #8fc29a;
       --line: #304057;
+      --button: #f0b45d;
+      --button-text: #15120d;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 32px 18px;
       background: var(--bg);
       color: var(--text);
       font-family: "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
       line-height: 1.75;
     }
+    a { color: inherit; }
     main {
-      width: min(720px, 100%);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      padding: 40px 0;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
     }
-    .label {
+    header {
+      padding: 18px 0 30px;
+      border-bottom: 1px solid var(--line);
+    }
+    .pr {
+      display: inline-block;
+      border: 1px solid var(--amber);
       color: var(--amber);
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0;
+      padding: 2px 10px;
+      font-size: 0.85rem;
+      font-weight: 800;
     }
     h1 {
-      margin: 10px 0 16px;
-      font-size: clamp(2rem, 7vw, 4rem);
-      line-height: 1.2;
+      margin: 16px 0 10px;
+      max-width: 850px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.18;
       letter-spacing: 0;
     }
-    p {
+    .lead {
+      max-width: 760px;
       margin: 0;
       color: var(--muted);
       font-size: 1.05rem;
+    }
+    .notice {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    section {
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+    .featured {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+      gap: 22px;
+      align-items: center;
+    }
+    .featured img {
+      width: 100%;
+      aspect-ratio: 1200 / 630;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+    .summary {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: var(--button);
+      color: var(--button-text);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .card img {
+      width: 100%;
+      aspect-ratio: 1200 / 630;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .policy {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .policy div {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+    .policy strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+    }
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 22px 18px 38px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    @media (max-width: 780px) {
+      .featured,
+      .grid,
+      .policy {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <main>
-    <div class="label">Banshaku Pipeline</div>
-    <h1>平日の晩酌を、ちょっと良くする</h1>
-    <p>レビューLPは準備中です。商品ページは承認済みキューから順次公開します。</p>
+    <header>
+      <span class="pr">PR</span>
+      <h1>平日の一杯を、ちょっと良くする晩酌レビューまとめ</h1>
+      <p class="lead">晩酌グッズ、お酒本体、おつまみ候補を生活者目線で整理しています。価格や在庫は変動するため、各商品ページで最新情報を確認してください。</p>
+      <p class="notice">当ページにはアフィリエイトリンクを含むLPへのリンクがあります。20歳未満の飲酒は法律で禁止されています。飲酒は適量を守りましょう。</p>
+    </header>
+
+    <section class="featured" aria-label="注目の比較">
+      <div>
+        <p class="eyebrow">Featured</p>
+        <h2>Amazonプライムデーで見る、真夏日の晩酌グッズ3選</h2>
+        <p class="summary">サーモスの保冷タンブラー、ドウシシャの丸氷メーカー、ソーダストリームの炭酸水メーカーを、真夏日の家飲み目線で比較しました。</p>
+        <a class="button" href="/p/prime-day-banshaku-cooling-2026/">比較を見る</a>
+      </div>
+      <img src="/assets/og/prime-day-banshaku-cooling-2026.png" alt="真夏日の晩酌グッズ3選の比較画像">
+    </section>
+
+    <section aria-label="日本酒飲み比べ">
+      <h2>日本酒飲み比べ</h2>
+      <div class="grid">
+        <article class="card">
+          <img src="/assets/og/0025-echigo-10002642.png" alt="日本酒飲み比べセットの紹介画像">
+          <h3>久保田・越乃寒梅・八海山などの飲み比べセット</h3>
+          <p>週末の家飲みやギフト候補として、日本酒飲み比べセットを確認できます。</p>
+          <a class="button" href="/p/0025-echigo-10002642/">詳細を見る</a>
+        </article>
+        <article class="card">
+          <img src="/assets/og/0026-keiryu-endo-10000112.png" alt="飲み切り日本酒セットの紹介画像">
+          <h3>飲み切り300mlの日本酒5本セット</h3>
+          <p>平日の晩酌でも試しやすい、飲み切りサイズの日本酒セットです。</p>
+          <a class="button" href="/p/0026-keiryu-endo-10000112/">詳細を見る</a>
+        </article>
+      </div>
+    </section>
+
+    <section aria-label="運用方針">
+      <h2>このサイトの見方</h2>
+      <div class="policy">
+        <div>
+          <strong>比較は生活者目線</strong>
+          うんちくより、平日の家飲みで使いやすいかを重視します。
+        </div>
+        <div>
+          <strong>価格は都度確認</strong>
+          セール対象、在庫、価格は変わるため、購入前に公式ページで確認してください。
+        </div>
+        <div>
+          <strong>PRは明記</strong>
+          アフィリエイトリンクを含むページにはPR表記と必要な注意文を掲載します。
+        </div>
+      </div>
+    </section>
   </main>
+  <footer>
+    <p>当サイトはAmazonのアソシエイトとして、適格販売により収入を得ています。</p>
+    <p>楽天アフィリエイトを利用する場合があります。商品画像は楽天APIの公式画像、または自作の比較画像を使用します。</p>
+  </footer>
 </body>
 </html>
