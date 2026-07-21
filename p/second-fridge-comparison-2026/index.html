@@ -248,6 +248,12 @@
     .cell-text.good { color: var(--teal-dark); font-weight: 900; }
     .cell-text.caution { color: var(--rust); font-weight: 900; }
     .cell-text.strong { color: var(--ink); font-weight: 700; }
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
     .amazon-button {
       display: inline-flex;
       align-items: center;
@@ -264,6 +270,30 @@
     }
     .amazon-button:hover,
     .amazon-button:focus-visible { background: #e68a00; }
+    .rakuten-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      border-radius: 6px;
+      background: #bf0000;
+      color: #fff;
+      padding: 7px 10px;
+      font-size: .72rem;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .rakuten-button:hover,
+    .rakuten-button:focus-visible { background: #9a0000; }
+    .rakuten-note {
+      display: block;
+      color: var(--rust);
+      font-size: .66rem;
+      line-height: 1.4;
+      text-align: left;
+      margin-top: 1px;
+    }
     .comparison-only {
       display: inline-flex;
       align-items: center;
@@ -511,18 +541,33 @@
             <tr>
               <th scope="row">商品を見る</th>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B0D72HXT39?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">simplusをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B0D72HXT39?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">simplusをAmazonで見る</a>
+                  <a class="rakuten-button" href="https://hb.afl.rakuten.co.jp/hgc/g00r09tn.k9qwp1dd.g00r09tn.k9qwq20b/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Frcmdin%2Feu-4589668450069%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Frcmdin%2Fi%2F11010052%2F&rafcid=wsc_i_is_cfffb985-e82f-4439-9947-c9a1499a5f56" target="_blank" rel="nofollow sponsored noopener">楽天市場で見る</a>
+                </div>
+              </td>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B00CFDOY1G?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">COMFEEをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B00CFDOY1G?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">COMFEEをAmazonで見る</a>
+                  <a class="rakuten-button" href="https://hb.afl.rakuten.co.jp/hgc/g00qtuzn.k9qwpf4e.g00qtuzn.k9qwq452/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Ftenpos2%2F2507800099497%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Ftenpos2%2Fi%2F11560856%2F&rafcid=wsc_i_is_cfffb985-e82f-4439-9947-c9a1499a5f56" target="_blank" rel="nofollow sponsored noopener">楽天（未使用品）</a><span class="rakuten-note">楽天掲載は未使用品扱い・送料別途見積のため、状態と送料を商品ページで確認</span>
+                </div>
+              </td>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B0B3CQYLHX?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">HisenseをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B0B3CQYLHX?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">HisenseをAmazonで見る</a>
+                  <a class="rakuten-button" href="https://hb.afl.rakuten.co.jp/hgc/g00qn68n.k9qwp9e5.g00qn68n.k9qwq71a/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fa-price%2F4580341986653%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fa-price%2Fi%2F10972959%2F&rafcid=wsc_i_is_cfffb985-e82f-4439-9947-c9a1499a5f56" target="_blank" rel="nofollow sponsored noopener">楽天市場で見る</a>
+                </div>
+              </td>
               
             </tr>
           </tbody>
         </table>
       </div>
       <div class="table-note">
-        <span>※価格・在庫は2026年7月20日時点の確認で変動します。購入前に各商品ページで最新情報を確認してください。</span><span>※比較はメーカー公開仕様に基づく編集評価です。実測値ではありません。</span><span>※直冷式冷蔵庫は庫内の霜の付き具合が室温・開閉頻度・収納量により変わります。定期的な霜取り・庫内清掃についてはメーカーの取扱説明書に従ってください。</span><span>※設置の際はメーカー指定の放熱スペース（冷蔵庫周囲の空間）を確保してください。壁や家具に密着させると冷却性能低下や故障の原因になります。</span><span>※商品画像はメーカー公式ページまたは公式CDNの製品画像を使用しています。simplus: simplus.style（公式サイト）、COMFEE: web-res.midea.com（feelcomfee.com公式CDN）、Hisense: hisense.co.jp（公式製品ページ）。</span>
+        <span>※価格・在庫は2026年7月20日時点の確認で変動します。購入前に各商品ページで最新情報を確認してください。</span><span>※表示価格はAmazon参考価格です。楽天市場での価格はAmazonと異なる場合があります。楽天ボタンから遷移した先の価格を確認してください。</span><span>※比較はメーカー公開仕様に基づく編集評価です。実測値ではありません。</span><span>※直冷式冷蔵庫は庫内の霜の付き具合が室温・開閉頻度・収納量により変わります。定期的な霜取り・庫内清掃についてはメーカーの取扱説明書に従ってください。</span><span>※設置の際はメーカー指定の放熱スペース（冷蔵庫周囲の空間）を確保してください。壁や家具に密着させると冷却性能低下や故障の原因になります。</span><span>※商品画像はメーカー公式ページまたは公式CDNの製品画像を使用しています。simplus: simplus.style（公式サイト）、COMFEE: web-res.midea.com（feelcomfee.com公式CDN）、Hisense: hisense.co.jp（公式製品ページ）。</span>
       </div>
     </section>
 

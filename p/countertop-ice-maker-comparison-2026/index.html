@@ -248,6 +248,12 @@
     .cell-text.good { color: var(--teal-dark); font-weight: 900; }
     .cell-text.caution { color: var(--rust); font-weight: 900; }
     .cell-text.strong { color: var(--ink); font-weight: 700; }
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
     .amazon-button {
       display: inline-flex;
       align-items: center;
@@ -264,6 +270,30 @@
     }
     .amazon-button:hover,
     .amazon-button:focus-visible { background: #e68a00; }
+    .rakuten-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      border-radius: 6px;
+      background: #bf0000;
+      color: #fff;
+      padding: 7px 10px;
+      font-size: .72rem;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .rakuten-button:hover,
+    .rakuten-button:focus-visible { background: #9a0000; }
+    .rakuten-note {
+      display: block;
+      color: var(--rust);
+      font-size: .66rem;
+      line-height: 1.4;
+      text-align: left;
+      margin-top: 1px;
+    }
     .comparison-only {
       display: inline-flex;
       align-items: center;
@@ -497,11 +527,26 @@
             <tr>
               <th scope="row">商品を見る</th>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B0DZ6C566X?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">THANKOをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B0DZ6C566X?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">THANKOをAmazonで見る</a>
+                  
+                </div>
+              </td>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B0F43L8MFL?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">simplusをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B0F43L8MFL?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">simplusをAmazonで見る</a>
+                  
+                </div>
+              </td>
               
-              <td><a class="amazon-button" href="https://www.amazon.co.jp/dp/B0DWFJXR7Q?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">ROOMMATEをAmazonで見る</a></td>
+              <td>
+                <div class="cta-stack">
+                  <a class="amazon-button" href="https://www.amazon.co.jp/dp/B0DWFJXR7Q?tag=satsusubuke-22" target="_blank" rel="nofollow sponsored noopener">ROOMMATEをAmazonで見る</a>
+                  
+                </div>
+              </td>
               
             </tr>
           </tbody>
