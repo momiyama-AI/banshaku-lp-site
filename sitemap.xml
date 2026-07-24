@@ -13,9 +13,6 @@
     <loc>https://banshaku-lp-site.pages.dev/editorial-policy/</loc>
   </url>
   <url>
-    <loc>https://banshaku-lp-site.pages.dev/privacy/</loc>
-  </url>
-  <url>
     <loc>https://banshaku-lp-site.pages.dev/p/beer-server-comparison-2026/</loc>
   </url>
   <url>
@@ -23,6 +20,9 @@
   </url>
   <url>
     <loc>https://banshaku-lp-site.pages.dev/p/countertop-ice-maker-comparison-2026/</loc>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/p/electric-wine-opener-comparison-2026/</loc>
   </url>
   <url>
     <loc>https://banshaku-lp-site.pages.dev/p/home-drinking-glass-comparison-2026/</loc>
@@ -47,5 +47,8 @@
   </url>
   <url>
     <loc>https://banshaku-lp-site.pages.dev/p/yakitori-grill-comparison-2026/</loc>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/privacy/</loc>
   </url>
 </urlset>
