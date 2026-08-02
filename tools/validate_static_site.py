@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -33,8 +34,13 @@ class PageParser(HTMLParser):
         self.h1_count = 0
         self.description = ""
         self.canonical = ""
+        self.robots = ""
         self.links: list[tuple[str, str]] = []
         self.images_without_alt: list[str] = []
+        self.images: list[dict[str, str]] = []
+        self.json_ld_depth = 0
+        self.json_ld_parts: list[str] = []
+        self.json_ld_documents: list[dict[str, object]] = []
 
     @property
     def title(self) -> str:
@@ -55,6 +61,12 @@ class PageParser(HTMLParser):
         ):
             self.description = attributes["content"] or ""
         elif (
+            tag == "meta"
+            and attributes.get("name") == "robots"
+            and attributes.get("content")
+        ):
+            self.robots = attributes["content"] or ""
+        elif (
             tag == "link"
             and attributes.get("rel") == "canonical"
             and attributes.get("href")
@@ -65,17 +77,56 @@ class PageParser(HTMLParser):
                 (attributes["href"] or "", attributes.get("rel") or "")
             )
         elif tag == "img":
+            self.images.append(
+                {key: value or "" for key, value in attrs if key}
+            )
             alt = attributes.get("alt")
             if alt is None or not alt.strip():
                 self.images_without_alt.append(attributes.get("src") or "<unknown>")
+        elif tag == "script" and attributes.get("type") == "application/ld+json":
+            self.json_ld_depth += 1
+            self.json_ld_parts = []
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "title" and self.title_depth:
             self.title_depth -= 1
+        elif tag == "script" and self.json_ld_depth:
+            raw_json = "".join(self.json_ld_parts).strip()
+            if raw_json:
+                try:
+                    parsed = json.loads(raw_json)
+                except json.JSONDecodeError:
+                    parsed = {"__invalid_json_ld__": raw_json}
+                if isinstance(parsed, dict):
+                    self.json_ld_documents.append(parsed)
+            self.json_ld_depth -= 1
+            self.json_ld_parts = []
 
     def handle_data(self, data: str) -> None:
         if self.title_depth:
             self.title_parts.append(data)
+        if self.json_ld_depth:
+            self.json_ld_parts.append(data)
+
+
+def schema_nodes(parser: PageParser) -> list[dict[str, object]]:
+    """Flatten JSON-LD top-level documents and @graph entries."""
+    nodes: list[dict[str, object]] = []
+    for document in parser.json_ld_documents:
+        graph = document.get("@graph")
+        if isinstance(graph, list):
+            nodes.extend(node for node in graph if isinstance(node, dict))
+        else:
+            nodes.append(document)
+    return nodes
+
+
+def node_has_type(node: dict[str, object], expected: str) -> bool:
+    """Return whether a JSON-LD node declares a schema type."""
+    value = node.get("@type")
+    if isinstance(value, str):
+        return value == expected
+    return isinstance(value, list) and expected in value
 
 
 def public_pages() -> list[Path]:
@@ -173,6 +224,92 @@ def validate() -> list[str]:
         for src in parser.images_without_alt:
             errors.append(f"{label}: image lacks alt text: {src}")
 
+        if label == "index.html" or label.startswith("p/"):
+            required_robot_tokens = {
+                "index",
+                "follow",
+                "max-image-preview:large",
+                "max-snippet:-1",
+                "max-video-preview:-1",
+            }
+            robot_tokens = {
+                token.strip() for token in parser.robots.split(",") if token.strip()
+            }
+            missing_robot_tokens = required_robot_tokens - robot_tokens
+            if missing_robot_tokens:
+                errors.append(
+                    f"{label}: robots meta lacks {sorted(missing_robot_tokens)}"
+                )
+
+        nodes = schema_nodes(parser)
+        if any("__invalid_json_ld__" in document for document in parser.json_ld_documents):
+            errors.append(f"{label}: JSON-LD is not valid JSON")
+        if label == "index.html":
+            for required_type in ("Organization", "WebSite", "CollectionPage"):
+                if not any(node_has_type(node, required_type) for node in nodes):
+                    errors.append(f"{label}: {required_type} JSON-LD is missing")
+
+            entry_images = [
+                image
+                for image in parser.images
+                if "entry-image" in image.get("class", "").split()
+            ]
+            if not entry_images:
+                errors.append("index.html: entry images are missing")
+            else:
+                for index, image in enumerate(entry_images):
+                    if image.get("width") != "1200" or image.get("height") != "675":
+                        errors.append(
+                            f"index.html: entry image lacks 1200x675 dimensions: "
+                            f"{image.get('src', '<unknown>')}"
+                        )
+                    if index == 0 and image.get("fetchpriority") != "high":
+                        errors.append("index.html: featured image lacks fetchpriority=high")
+                    if index > 0 and image.get("loading") != "lazy":
+                        errors.append(
+                            f"index.html: below-fold entry image is not lazy: "
+                            f"{image.get('src', '<unknown>')}"
+                        )
+
+        if label.startswith("p/"):
+            article_nodes = [node for node in nodes if node_has_type(node, "Article")]
+            if len(article_nodes) != 1:
+                errors.append(
+                    f"{label}: expected 1 Article JSON-LD node, found {len(article_nodes)}"
+                )
+            else:
+                article = article_nodes[0]
+                if article.get("headline") != parser.title:
+                    errors.append(f"{label}: Article headline does not match title")
+                if article.get("description") != parser.description:
+                    errors.append(
+                        f"{label}: Article description does not match meta description"
+                    )
+                if not article.get("datePublished") or not article.get("dateModified"):
+                    errors.append(f"{label}: Article dates are incomplete")
+                visible_dates = set(re.findall(r'<time datetime="([0-9-]+)"', text))
+                for date_key in ("datePublished", "dateModified"):
+                    date_value = article.get(date_key)
+                    if isinstance(date_value, str) and date_value not in visible_dates:
+                        errors.append(
+                            f"{label}: {date_key} {date_value} is not visible in a time element"
+                        )
+            if not any(node_has_type(node, "BreadcrumbList") for node in nodes):
+                errors.append(f"{label}: BreadcrumbList JSON-LD is missing")
+
+            self_path = urlsplit(expected_canonical).path
+            related_paths = {
+                urlsplit(href).path
+                for href, _ in parser.links
+                if urlsplit(href).path.startswith("/p/")
+                and urlsplit(href).path != self_path
+            }
+            if len(related_paths) < 2:
+                errors.append(
+                    f"{label}: expected at least 2 related comparison links, "
+                    f"found {len(related_paths)}"
+                )
+
         if re.search(r"\[(?:TODO|運営者名|連絡先|入力|要確認)[^\]]*\]", text):
             errors.append(f"{label}: placeholder text remains")
         if "/assets/site-info.css" not in text:
@@ -202,22 +339,35 @@ def validate() -> list[str]:
     sitemap_path = ROOT / "sitemap.xml"
     sitemap_root = ET.parse(sitemap_path).getroot()
     namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-    sitemap_urls = {
-        element.text.strip()
-        for element in sitemap_root.findall("sm:url/sm:loc", namespace)
-        if element.text
-    }
+    sitemap_urls: dict[str, str] = {}
+    for url_element in sitemap_root.findall("sm:url", namespace):
+        loc = url_element.find("sm:loc", namespace)
+        lastmod = url_element.find("sm:lastmod", namespace)
+        if loc is not None and loc.text:
+            sitemap_urls[loc.text.strip()] = (
+                lastmod.text.strip() if lastmod is not None and lastmod.text else ""
+            )
     expected_urls = {public_url(page) for page in pages}
-    missing_from_sitemap = expected_urls - sitemap_urls
-    stale_in_sitemap = sitemap_urls - expected_urls
+    missing_from_sitemap = expected_urls - set(sitemap_urls)
+    stale_in_sitemap = set(sitemap_urls) - expected_urls
     if missing_from_sitemap:
         errors.append(f"sitemap.xml: missing {sorted(missing_from_sitemap)}")
     if stale_in_sitemap:
         errors.append(f"sitemap.xml: stale URLs {sorted(stale_in_sitemap)}")
+    missing_lastmod = {
+        url
+        for url in expected_urls & set(sitemap_urls)
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", sitemap_urls[url])
+    }
+    if missing_lastmod:
+        errors.append(f"sitemap.xml: missing valid lastmod for {sorted(missing_lastmod)}")
 
     robots_text = (ROOT / "robots.txt").read_text(encoding="utf-8")
     if f"Sitemap: {BASE_URL}/sitemap.xml" not in robots_text:
         errors.append("robots.txt: canonical sitemap declaration is missing")
+    for search_crawler in ("OAI-SearchBot", "Claude-SearchBot"):
+        if f"User-agent: {search_crawler}" not in robots_text:
+            errors.append(f"robots.txt: {search_crawler} rule is missing")
 
     return errors
 
