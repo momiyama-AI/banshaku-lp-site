@@ -19,7 +19,7 @@ PUBLISHER_ID = f"{SITE_URL}/#organization"
 
 ARTICLE_DATES = {
     "beer-server-comparison-2026": ("2026-07-16", "2026-07-26"),
-    "bottle-cooler-comparison-2026": ("2026-08-02", "2026-08-02"),
+    "bottle-cooler-comparison-2026": ("2026-08-02", "2026-08-04"),
     "camp-can-holder-comparison-2026": ("2026-07-24", "2026-07-26"),
     "compact-air-fryer-comparison-2026": ("2026-07-29", "2026-07-29"),
     "countertop-ice-maker-comparison-2026": ("2026-07-19", "2026-07-26"),
@@ -40,7 +40,7 @@ ARTICLE_DATES = {
 
 SHORT_TITLES = {
     "beer-server-comparison-2026": "缶ビールサーバー3タイプ比較",
-    "bottle-cooler-comparison-2026": "卓上ボトルクーラー3製品比較",
+    "bottle-cooler-comparison-2026": "家飲み用ボトルクーラー3製品比較",
     "camp-can-holder-comparison-2026": "保冷缶ホルダー3商品比較",
     "compact-air-fryer-comparison-2026": "コンパクトノンフライヤー3機種比較",
     "countertop-ice-maker-comparison-2026": "家庭用製氷機3機種比較",
@@ -102,7 +102,7 @@ HOME_ORDER = (
 )
 
 INFO_LASTMOD = {
-    "/": "2026-08-02",
+    "/": "2026-08-04",
     "/about/": "2026-07-26",
     "/contact/": "2026-07-26",
     "/editorial-policy/": "2026-07-26",
