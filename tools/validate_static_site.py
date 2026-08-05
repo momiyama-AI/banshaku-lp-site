@@ -258,9 +258,9 @@ def validate() -> list[str]:
                 errors.append("index.html: entry images are missing")
             else:
                 for index, image in enumerate(entry_images):
-                    if image.get("width") != "1200" or image.get("height") != "675":
+                    if image.get("width") or image.get("height"):
                         errors.append(
-                            f"index.html: entry image lacks 1200x675 dimensions: "
+                            f"index.html: entry image has fixed HTML dimensions: "
                             f"{image.get('src', '<unknown>')}"
                         )
                     if index == 0 and image.get("fetchpriority") != "high":

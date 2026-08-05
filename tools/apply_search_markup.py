@@ -342,9 +342,9 @@ def update_home() -> None:
         image_index += 1
         tag = re.sub(r'\s+(?:loading|decoding|fetchpriority|width|height)="[^"]*"', "", tag)
         if image_index == 1:
-            hints = ' width="1200" height="675" decoding="async" fetchpriority="high"'
+            hints = ' decoding="async" fetchpriority="high"'
         else:
-            hints = ' width="1200" height="675" loading="lazy" decoding="async"'
+            hints = ' loading="lazy" decoding="async"'
         return tag[:-1] + hints + ">"
 
     document = re.sub(
