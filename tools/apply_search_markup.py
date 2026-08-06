@@ -21,6 +21,7 @@ ARTICLE_DATES = {
     "beer-server-comparison-2026": ("2026-07-16", "2026-07-26"),
     "bottle-cooler-comparison-2026": ("2026-08-02", "2026-08-04"),
     "camp-can-holder-comparison-2026": ("2026-07-24", "2026-07-26"),
+    "clear-ice-ball-maker-comparison-2026": ("2026-08-06", "2026-08-06"),
     "compact-air-fryer-comparison-2026": ("2026-07-29", "2026-07-29"),
     "countertop-ice-maker-comparison-2026": ("2026-07-19", "2026-07-26"),
     "electric-wine-opener-comparison-2026": ("2026-07-25", "2026-07-26"),
@@ -42,6 +43,7 @@ SHORT_TITLES = {
     "beer-server-comparison-2026": "缶ビールサーバー3タイプ比較",
     "bottle-cooler-comparison-2026": "家飲み用ボトルクーラー3製品比較",
     "camp-can-holder-comparison-2026": "保冷缶ホルダー3商品比較",
+    "clear-ice-ball-maker-comparison-2026": "透明な丸氷メーカー3製品比較",
     "compact-air-fryer-comparison-2026": "コンパクトノンフライヤー3機種比較",
     "countertop-ice-maker-comparison-2026": "家庭用製氷機3機種比較",
     "electric-wine-opener-comparison-2026": "電動ワインオープナー3機種比較",
@@ -63,6 +65,7 @@ RELATED = {
     "beer-server-comparison-2026": ("camp-can-holder-comparison-2026", "summer-beer-comparison-2026", "home-drinking-glass-comparison-2026"),
     "bottle-cooler-comparison-2026": ("wine-preservation-comparison-2026", "electric-wine-opener-comparison-2026", "ice-pail-comparison-2026"),
     "camp-can-holder-comparison-2026": ("soft-cooler-comparison-2026", "summer-beer-comparison-2026", "beer-server-comparison-2026"),
+    "clear-ice-ball-maker-comparison-2026": ("ice-pail-comparison-2026", "whiskey-pump-comparison-2026", "countertop-ice-maker-comparison-2026"),
     "compact-air-fryer-comparison-2026": ("home-smoker-comparison-2026", "yakitori-grill-comparison-2026", "second-fridge-comparison-2026"),
     "countertop-ice-maker-comparison-2026": ("ice-pail-comparison-2026", "shaved-ice-maker-comparison-2026", "sodastream-comparison-2026"),
     "electric-wine-opener-comparison-2026": ("wine-preservation-comparison-2026", "bottle-cooler-comparison-2026", "home-drinking-glass-comparison-2026"),
@@ -81,6 +84,7 @@ RELATED = {
 }
 
 HOME_ORDER = (
+    "clear-ice-ball-maker-comparison-2026",
     "bottle-cooler-comparison-2026",
     "compact-air-fryer-comparison-2026",
     "shaved-ice-maker-comparison-2026",
@@ -102,7 +106,7 @@ HOME_ORDER = (
 )
 
 INFO_LASTMOD = {
-    "/": "2026-08-04",
+    "/": "2026-08-06",
     "/about/": "2026-07-26",
     "/contact/": "2026-07-26",
     "/editorial-policy/": "2026-07-26",
