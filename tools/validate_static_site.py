@@ -22,6 +22,17 @@ REQUIRED_INFO_LINKS = {
 AMAZON_DISCLOSURE = (
     "Amazonのアソシエイトとして、晩酌ラボは適格販売により収入を得ています。"
 )
+RETIRED_REDIRECTS = {
+    "beer-server-comparison-2026": "/guides/cooling-methods/",
+    "countertop-ice-maker-comparison-2026": "/p/clear-ice-ball-maker-comparison-2026/",
+    "home-drinking-glass-comparison-2026": "/guides/cooling-methods/",
+    "ice-pail-comparison-2026": "/guides/cooling-methods/",
+    "prime-day-banshaku-cooling-2026": "/guides/cooling-methods/",
+    "sodastream-comparison-2026": "/guides/cooling-methods/",
+    "summer-beer-comparison-2026": "/",
+    "whiskey-pump-comparison-2026": "/guides/reading-comparisons/",
+    "yakitori-grill-comparison-2026": "/p/home-smoker-comparison-2026/",
+}
 
 
 class PageParser(HTMLParser):
@@ -135,7 +146,13 @@ def public_pages() -> list[Path]:
     pages.extend(
         path
         for path in ROOT.rglob("index.html")
-        if path != ROOT / "index.html" and "assets" not in path.parts
+        if path != ROOT / "index.html"
+        and "assets" not in path.parts
+        and not (
+            len(path.parts) >= 3
+            and path.parent.parent.name == "p"
+            and path.parent.name in RETIRED_REDIRECTS
+        )
     )
     return sorted(pages)
 
@@ -224,7 +241,7 @@ def validate() -> list[str]:
         for src in parser.images_without_alt:
             errors.append(f"{label}: image lacks alt text: {src}")
 
-        if label == "index.html" or label.startswith("p/"):
+        if label == "index.html" or label.startswith(("p/", "guides/")):
             required_robot_tokens = {
                 "index",
                 "follow",
@@ -254,9 +271,7 @@ def validate() -> list[str]:
                 for image in parser.images
                 if "entry-image" in image.get("class", "").split()
             ]
-            if not entry_images:
-                errors.append("index.html: entry images are missing")
-            else:
+            if entry_images:
                 for index, image in enumerate(entry_images):
                     if image.get("width") or image.get("height"):
                         errors.append(
@@ -271,7 +286,15 @@ def validate() -> list[str]:
                             f"{image.get('src', '<unknown>')}"
                         )
 
-        if label.startswith("p/"):
+            for guide_path in (
+                "/guides/cooling-methods/",
+                "/guides/measure-before-buying/",
+                "/guides/reading-comparisons/",
+            ):
+                if guide_path not in page_links:
+                    errors.append(f"index.html: missing guide link {guide_path}")
+
+        if label.startswith(("p/", "guides/")):
             article_nodes = [node for node in nodes if node_has_type(node, "Article")]
             if len(article_nodes) != 1:
                 errors.append(
@@ -297,18 +320,26 @@ def validate() -> list[str]:
             if not any(node_has_type(node, "BreadcrumbList") for node in nodes):
                 errors.append(f"{label}: BreadcrumbList JSON-LD is missing")
 
-            self_path = urlsplit(expected_canonical).path
-            related_paths = {
-                urlsplit(href).path
-                for href, _ in parser.links
-                if urlsplit(href).path.startswith("/p/")
-                and urlsplit(href).path != self_path
-            }
-            if len(related_paths) < 2:
-                errors.append(
-                    f"{label}: expected at least 2 related comparison links, "
-                    f"found {len(related_paths)}"
-                )
+            if label.startswith("p/"):
+                self_path = urlsplit(expected_canonical).path
+                related_paths = {
+                    urlsplit(href).path
+                    for href, _ in parser.links
+                    if urlsplit(href).path.startswith("/p/")
+                    and urlsplit(href).path != self_path
+                }
+                if len(related_paths) < 2:
+                    errors.append(
+                        f"{label}: expected at least 2 related comparison links, "
+                        f"found {len(related_paths)}"
+                    )
+                if "<!-- Reader value:start -->" not in text:
+                    errors.append(f"{label}: reader value block is missing")
+            else:
+                visible_text = re.sub(r"<script[\s\S]*?</script>|<style[\s\S]*?</style>|<[^>]+>", " ", text)
+                visible_text = re.sub(r"\s+", "", visible_text)
+                if len(visible_text) < 2200:
+                    errors.append(f"{label}: guide text is unexpectedly short")
 
         if re.search(r"\[(?:TODO|運営者名|連絡先|入力|要確認)[^\]]*\]", text):
             errors.append(f"{label}: placeholder text remains")
@@ -361,6 +392,16 @@ def validate() -> list[str]:
     }
     if missing_lastmod:
         errors.append(f"sitemap.xml: missing valid lastmod for {sorted(missing_lastmod)}")
+
+    redirects_path = ROOT / "_redirects"
+    if not redirects_path.is_file():
+        errors.append("_redirects: file is missing")
+    else:
+        redirects_text = redirects_path.read_text(encoding="utf-8")
+        for slug, destination in RETIRED_REDIRECTS.items():
+            rule = f"/p/{slug}/ {destination} 301"
+            if rule not in redirects_text:
+                errors.append(f"_redirects: missing rule {rule}")
 
     robots_text = (ROOT / "robots.txt").read_text(encoding="utf-8")
     if f"Sitemap: {BASE_URL}/sitemap.xml" not in robots_text:
