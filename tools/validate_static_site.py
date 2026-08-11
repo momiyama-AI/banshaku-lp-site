@@ -44,8 +44,11 @@ class PageParser(HTMLParser):
         self.title_parts: list[str] = []
         self.h1_count = 0
         self.description = ""
+        self.description_count = 0
         self.canonical = ""
+        self.canonical_count = 0
         self.robots = ""
+        self.robots_count = 0
         self.links: list[tuple[str, str]] = []
         self.images_without_alt: list[str] = []
         self.images: list[dict[str, str]] = []
@@ -70,18 +73,21 @@ class PageParser(HTMLParser):
             and attributes.get("name") == "description"
             and attributes.get("content")
         ):
+            self.description_count += 1
             self.description = attributes["content"] or ""
         elif (
             tag == "meta"
             and attributes.get("name") == "robots"
             and attributes.get("content")
         ):
+            self.robots_count += 1
             self.robots = attributes["content"] or ""
         elif (
             tag == "link"
             and attributes.get("rel") == "canonical"
             and attributes.get("href")
         ):
+            self.canonical_count += 1
             self.canonical = attributes["href"] or ""
         elif tag == "a" and attributes.get("href"):
             self.links.append(
@@ -203,11 +209,19 @@ def validate() -> list[str]:
 
         if not parser.description.strip():
             errors.append(f"{label}: meta description is missing")
+        elif parser.description_count != 1:
+            errors.append(
+                f"{label}: expected 1 meta description, found {parser.description_count}"
+            )
         if parser.h1_count != 1:
             errors.append(f"{label}: expected 1 h1, found {parser.h1_count}")
 
         expected_canonical = public_url(page)
-        if parser.canonical != expected_canonical:
+        if parser.canonical_count != 1:
+            errors.append(
+                f"{label}: expected 1 canonical link, found {parser.canonical_count}"
+            )
+        elif parser.canonical != expected_canonical:
             errors.append(
                 f"{label}: canonical is {parser.canonical!r}, expected {expected_canonical!r}"
             )
@@ -242,6 +256,10 @@ def validate() -> list[str]:
             errors.append(f"{label}: image lacks alt text: {src}")
 
         if label == "index.html" or label.startswith(("p/", "guides/")):
+            if parser.robots_count != 1:
+                errors.append(
+                    f"{label}: expected 1 robots meta tag, found {parser.robots_count}"
+                )
             required_robot_tokens = {
                 "index",
                 "follow",
@@ -261,10 +279,51 @@ def validate() -> list[str]:
         nodes = schema_nodes(parser)
         if any("__invalid_json_ld__" in document for document in parser.json_ld_documents):
             errors.append(f"{label}: JSON-LD is not valid JSON")
+        node_ids = [node.get("@id") for node in nodes if isinstance(node.get("@id"), str)]
+        duplicate_node_ids = sorted(
+            node_id for node_id in set(node_ids) if node_ids.count(node_id) > 1
+        )
+        if duplicate_node_ids:
+            errors.append(f"{label}: duplicate JSON-LD @id values {duplicate_node_ids}")
         if label == "index.html":
             for required_type in ("Organization", "WebSite", "CollectionPage"):
                 if not any(node_has_type(node, required_type) for node in nodes):
                     errors.append(f"{label}: {required_type} JSON-LD is missing")
+
+            collection_nodes = [
+                node for node in nodes if node_has_type(node, "CollectionPage")
+            ]
+            if len(collection_nodes) != 1:
+                errors.append(
+                    f"{label}: expected 1 CollectionPage JSON-LD node, "
+                    f"found {len(collection_nodes)}"
+                )
+            else:
+                main_entity = collection_nodes[0].get("mainEntity")
+                elements = (
+                    main_entity.get("itemListElement", [])
+                    if isinstance(main_entity, dict)
+                    else []
+                )
+                listed_urls = {
+                    item.get("url")
+                    for item in elements
+                    if isinstance(item, dict) and isinstance(item.get("url"), str)
+                }
+                expected_collection_urls = {
+                    public_url(candidate)
+                    for candidate in pages
+                    if candidate.relative_to(ROOT).as_posix().startswith(("p/", "guides/"))
+                }
+                if listed_urls != expected_collection_urls:
+                    errors.append(
+                        "index.html: CollectionPage ItemList does not match public "
+                        "guide and comparison URLs"
+                    )
+                if isinstance(main_entity, dict) and main_entity.get("numberOfItems") != len(elements):
+                    errors.append(
+                        "index.html: CollectionPage numberOfItems does not match ItemList"
+                    )
 
             entry_images = [
                 image
@@ -406,7 +465,14 @@ def validate() -> list[str]:
     robots_text = (ROOT / "robots.txt").read_text(encoding="utf-8")
     if f"Sitemap: {BASE_URL}/sitemap.xml" not in robots_text:
         errors.append("robots.txt: canonical sitemap declaration is missing")
-    for search_crawler in ("OAI-SearchBot", "Claude-SearchBot"):
+    for search_crawler in (
+        "OAI-SearchBot",
+        "ChatGPT-User",
+        "Claude-SearchBot",
+        "Claude-User",
+        "PerplexityBot",
+        "Perplexity-User",
+    ):
         if f"User-agent: {search_crawler}" not in robots_text:
             errors.append(f"robots.txt: {search_crawler} rule is missing")
 

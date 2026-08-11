@@ -27,12 +27,15 @@ ARTICLE_DATES = {
     "electric-wine-opener-comparison-2026": ("2026-07-25", "2026-08-07"),
     "home-drinking-glass-comparison-2026": ("2026-07-13", "2026-07-26"),
     "home-smoker-comparison-2026": ("2026-07-22", "2026-08-07"),
+    "hot-sandwich-maker-comparison-2026": ("2026-08-10", "2026-08-10"),
     "ice-pail-comparison-2026": ("2026-07-18", "2026-07-26"),
+    "microwave-grill-pan-comparison-2026": ("2026-08-10", "2026-08-10"),
     "prime-day-banshaku-cooling-2026": ("2026-07-11", "2026-07-26"),
     "second-fridge-comparison-2026": ("2026-07-20", "2026-08-07"),
     "shaved-ice-maker-comparison-2026": ("2026-07-28", "2026-08-07"),
     "sodastream-comparison-2026": ("2026-07-14", "2026-07-26"),
     "soft-cooler-comparison-2026": ("2026-07-26", "2026-08-07"),
+    "tabletop-oil-fryer-comparison-2026": ("2026-08-10", "2026-08-10"),
     "summer-beer-comparison-2026": ("2026-07-27", "2026-07-27"),
     "whiskey-pump-comparison-2026": ("2026-07-12", "2026-07-26"),
     "wine-preservation-comparison-2026": ("2026-07-26", "2026-08-07"),
@@ -49,12 +52,15 @@ SHORT_TITLES = {
     "electric-wine-opener-comparison-2026": "電動ワインオープナー3機種比較",
     "home-drinking-glass-comparison-2026": "家飲みグラス3タイプ比較",
     "home-smoker-comparison-2026": "家庭用燻製器3タイプ比較",
+    "hot-sandwich-maker-comparison-2026": "電気ホットサンドメーカー3機種比較",
     "ice-pail-comparison-2026": "家飲みアイスペール3機種比較",
+    "microwave-grill-pan-comparison-2026": "電子レンジグリルパン3製品比較",
     "prime-day-banshaku-cooling-2026": "真夏日の晩酌グッズ3選",
     "second-fridge-comparison-2026": "晩酌用セカンド冷蔵庫3機種比較",
     "shaved-ice-maker-comparison-2026": "電動かき氷器3機種比較",
     "sodastream-comparison-2026": "ソーダストリーム全5機種比較",
     "soft-cooler-comparison-2026": "ソフトクーラー3商品比較",
+    "tabletop-oil-fryer-comparison-2026": "卓上電気フライヤー3機種比較",
     "summer-beer-comparison-2026": "2026年夏限定ビール4本予想比較",
     "whiskey-pump-comparison-2026": "電動ウイスキーポンプ3種比較",
     "wine-preservation-comparison-2026": "ワイン保存グッズ3方式比較",
@@ -95,6 +101,16 @@ HOME_ORDER = (
     "home-smoker-comparison-2026",
     "second-fridge-comparison-2026",
 )
+
+# These newer, independently authored pages already contain complete Article
+# markup. Include them in discovery surfaces without rewriting their content
+# through the older comparison-page generator.
+DISCOVERY_ONLY_ORDER = (
+    "microwave-grill-pan-comparison-2026",
+    "hot-sandwich-maker-comparison-2026",
+    "tabletop-oil-fryer-comparison-2026",
+)
+PUBLIC_COMPARISON_ORDER = DISCOVERY_ONLY_ORDER + HOME_ORDER
 
 GUIDE_PAGES = {
     "/guides/cooling-methods/": ("冷やす・保つ・保管するの違い", "2026-08-07"),
@@ -182,7 +198,7 @@ EVIDENCE_LIMITS = {
 }
 
 INFO_LASTMOD = {
-    "/": "2026-08-07",
+    "/": "2026-08-11",
     "/about/": "2026-08-07",
     "/contact/": "2026-07-26",
     "/editorial-policy/": "2026-08-07",
@@ -221,6 +237,35 @@ def replace_search_block(document: str, block: str) -> str:
     if not stylesheet:
         raise ValueError("Stylesheet insertion point not found")
     return document[: stylesheet.start()] + block + "\n" + document[stylesheet.start() :]
+
+
+def remove_unmanaged_home_search_markup(document: str) -> str:
+    """Remove legacy homepage search markup before writing the managed block."""
+    document = re.sub(
+        rf"{re.escape(SEO_START)}.*?{re.escape(SEO_END)}\n?",
+        "",
+        document,
+        flags=re.DOTALL,
+    )
+    document = re.sub(
+        r'^  <meta name="robots" content="[^"]*">\n?',
+        "",
+        document,
+        flags=re.MULTILINE,
+    )
+    document = re.sub(
+        r'^  <meta property="og:site_name" content="[^"]*">\n?',
+        "",
+        document,
+        flags=re.MULTILINE,
+    )
+    document = re.sub(
+        r'^  <script type="application/ld\+json">.*?</script>\n?',
+        "",
+        document,
+        flags=re.DOTALL | re.MULTILINE,
+    )
+    return document
 
 
 def format_japanese_date(value: str) -> str:
@@ -416,16 +461,18 @@ def update_article(slug: str) -> None:
     if compliance_start == -1:
         raise ValueError(f"{slug}: compliance insertion point not found")
     document = (
-        document[:compliance_start]
+        document[:compliance_start].rstrip()
+        + "\n\n"
         + quality_block(slug)
         + "\n\n"
-        + document[compliance_start:]
+        + document[compliance_start:].lstrip("\r\n")
     )
     main_end = document.rfind("  </main>")
     if main_end == -1:
         raise ValueError(f"{slug}: main closing tag not found")
     document = (
-        document[:main_end]
+        document[:main_end].rstrip()
+        + "\n\n"
         + related_block(slug)
         + "\n"
         + document[main_end:]
@@ -436,6 +483,7 @@ def update_article(slug: str) -> None:
 def update_home() -> None:
     page = ROOT / "index.html"
     document = page.read_text(encoding="utf-8")
+    document = remove_unmanaged_home_search_markup(document)
     item_list = []
     for position, (path, (title, _)) in enumerate(GUIDE_PAGES.items(), start=1):
         item_list.append(
@@ -446,7 +494,9 @@ def update_home() -> None:
                 "url": f"{SITE_URL}{path}",
             }
         )
-    for position, slug in enumerate(HOME_ORDER, start=len(GUIDE_PAGES) + 1):
+    for position, slug in enumerate(
+        PUBLIC_COMPARISON_ORDER, start=len(GUIDE_PAGES) + 1
+    ):
         item_list.append(
             {
                 "@type": "ListItem",
@@ -544,7 +594,7 @@ def update_sitemap() -> None:
         for path, (_, lastmod) in GUIDE_PAGES.items()
     ] + [
         (f"/p/{slug}/", modified)
-        for slug in HOME_ORDER
+        for slug in PUBLIC_COMPARISON_ORDER
         for _, modified in (ARTICLE_DATES[slug],)
     ]
     lines = [
@@ -585,6 +635,9 @@ def main() -> None:
         raise ValueError("Active article metadata maps are out of sync")
     if active != set(GUIDE_RELATED) or active != set(PRE_PURCHASE_CHECKS) or active != set(EVIDENCE_LIMITS):
         raise ValueError("Content quality maps are out of sync")
+    discoverable = set(PUBLIC_COMPARISON_ORDER)
+    if not discoverable <= set(ARTICLE_DATES) or not discoverable <= set(SHORT_TITLES):
+        raise ValueError("Public comparison metadata maps are out of sync")
     update_home()
     for slug in HOME_ORDER:
         update_article(slug)
