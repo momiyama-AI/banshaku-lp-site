@@ -1,0 +1,14 @@
+[
+  {"id":1,"axis":"taste","text":"唐揚げにレモンは？","choices":[{"text":"かける","letter":"S"},{"text":"かけない","letter":"K"}]},
+  {"id":2,"axis":"portion","text":"晩酌の日の夕飯は？","choices":[{"text":"つまみで済ませる","letter":"G"},{"text":"夕飯のあとにゆっくり飲む","letter":"C"}]},
+  {"id":3,"axis":"effort","text":"疲れて帰った平日のつまみは？","choices":[{"text":"買ってきたものを皿に出す","letter":"R"},{"text":"10分あれば何か作る","letter":"T"}]},
+  {"id":4,"axis":"adventure","text":"居酒屋で初めて見るメニューがあったら？","choices":[{"text":"とりあえず頼んでみる","letter":"A"},{"text":"いつもの定番を頼む","letter":"O"}]},
+  {"id":5,"axis":"taste","text":"お通しで出てきたらうれしいのは？","choices":[{"text":"ポテトサラダ","letter":"K"},{"text":"もずく酢","letter":"S"}]},
+  {"id":6,"axis":"portion","text":"おつまみは何品並べたい？","choices":[{"text":"小皿でちょこちょこ3品","letter":"C"},{"text":"大皿1品でドン","letter":"G"}]},
+  {"id":7,"axis":"effort","text":"スーパーの惣菜売り場は？","choices":[{"text":"食材売り場のほうが気になる","letter":"T"},{"text":"晩酌の強い味方","letter":"R"}]},
+  {"id":8,"axis":"adventure","text":"枝豆の食べ方は？","choices":[{"text":"塩ゆでがいちばん","letter":"O"},{"text":"ガーリックやラー油で変えたい","letter":"A"}]},
+  {"id":9,"axis":"taste","text":"何にでもかけたくなるのは？","choices":[{"text":"ポン酢","letter":"S"},{"text":"マヨネーズ","letter":"K"}]},
+  {"id":10,"axis":"portion","text":"締めのごはんものは？","choices":[{"text":"ないと終われない","letter":"G"},{"text":"なくていい","letter":"C"}]},
+  {"id":11,"axis":"effort","text":"洗い物は？","choices":[{"text":"皿1枚までにしたい","letter":"R"},{"text":"気にしない","letter":"T"}]},
+  {"id":12,"axis":"adventure","text":"コンビニの新商品は？","choices":[{"text":"見つけたら即買い","letter":"A"},{"text":"評判を見てから","letter":"O"}]}
+]

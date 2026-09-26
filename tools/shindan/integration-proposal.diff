@@ -1,0 +1,35 @@
+--- a/index.html
++++ b/index.html
+@@ -126,6 +126,7 @@
+     <div class="top-nav-inner">
+       <a class="brand" href="/">晩酌ラボ</a>
+       <div class="top-links">
++        <a href="/shindan/">晩酌つまみ16タイプ診断</a>
+         <a href="#guides">選び方ガイド</a>
+         <a href="#comparisons">比較記事</a>
+         <a href="/about/">運営者情報</a>
+--- a/sitemap.xml
++++ b/sitemap.xml
+@@ -87,4 +87,22 @@
+   <url>
+     <loc>https://banshaku-lp-site.pages.dev/privacy/</loc>
+   </url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/types/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/scro/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/scra/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/scto/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/scta/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/sgro/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/sgra/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/sgto/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/sgta/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kcro/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kcra/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kcto/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kcta/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kgro/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kgra/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kgto/</loc></url>
++  <url><loc>https://banshaku-lp-site.pages.dev/shindan/result/kgta/</loc></url>
+ </urlset>
