@@ -51,7 +51,7 @@
         theme.value = color;
         const routes = ['/shindan/', '/shindan/types/', ...data.types.flatMap(type => {
           const path = '/shindan/result/' + type.code.toLowerCase() + '/';
-          return [path, path + '#p=67-100-67-100', path + '#p=66-100-67-100'];
+          return [path, path + '#p=67-100-67-100', path + '#p=100-67-100-67', path + '#p=66-100-67-100'];
         })];
         for (const path of routes) {
           status.textContent = color + ' ' + path;
@@ -67,11 +67,40 @@
           if (result.width !== result.scroll) throw new Error('Horizontal overflow: ' + path);
           if (result.dark !== (color === 'dark')) throw new Error('Theme did not apply: ' + color);
           if (path.includes('/result/')) {
-            const valid = path.includes('#p=67-');
+            const valid = path.includes('#p=67-') || path.includes('#p=100-');
             if (doc.querySelector('#personal-result').hidden === valid) throw new Error('Incorrect bars: ' + path);
             const bottom = doc.querySelector('.result-line').getBoundingClientRect().bottom;
             result.heroBottom = Math.round(bottom);
             if (bottom > 640) throw new Error('Hero below first viewport: ' + path);
+            const portrait = doc.querySelector('.result-character');
+            if (!portrait.complete || portrait.naturalWidth !== 512) throw new Error('Missing character: ' + path);
+            if (portrait.getBoundingClientRect().bottom > 640) throw new Error('Character below first viewport: ' + path);
+            const code = doc.body.dataset.code;
+            const type = data.types.find(type => type.code === code);
+            if (!portrait.src.endsWith(type.character.src)) throw new Error('Wrong character: ' + code);
+            for (const key of ['description', 'reason', 'tip']) {
+              if (!doc.body.textContent.includes(type[key])) throw new Error('Missing detail: ' + key);
+            }
+            const votes = [...doc.querySelectorAll('.axis-vote')];
+            if (votes.length !== 4 || votes.some(vote => vote.hidden === valid)) throw new Error('Incorrect vote visibility');
+            if (valid) {
+              const percentages = path.split('#p=')[1].split('-').map(Number);
+              votes.forEach((vote, index) => {
+                const axis = data.axes[index];
+                const label = axis.labels[axis.letters.indexOf(code[index])];
+                const count = percentages[index] === 100 ? 3 : 2;
+                if (!vote.textContent.includes('3問中' + count + '問が「' + label + '」側')) throw new Error('Wrong reason: ' + code);
+              });
+              // A hash change must remove personal claims without a page reload.
+              await new Promise(resolve => {
+                win.addEventListener('hashchange', resolve, { once: true });
+                win.location.hash = 'invalid';
+              });
+              if (!doc.querySelector('#personal-result').hidden || votes.some(vote => !vote.hidden || vote.textContent)) {
+                throw new Error('Stale personal explanation after hash change');
+              }
+              if (doc.querySelector('#reason-title').textContent.includes('あなた')) throw new Error('Stale personal title');
+            }
             if (doc.querySelectorAll('#recipes li').length !== 3) throw new Error('Missing recipes');
             if (new URL(doc.querySelector('#share-x').href).searchParams.get('url').includes('#')) throw new Error('Hash leaked');
           }

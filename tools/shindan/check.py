@@ -52,6 +52,15 @@ def check(dist: bool = False) -> None:
     files = sorted(site.rglob("*.html"))
     assert len(files) == 18, f"Expected 18 pages, found {len(files)}"
     assert len(list((site / "og").glob("*.png"))) == 17
+    characters = list((site / "assets/characters").glob("*.webp"))
+    assert len(characters) == 16
+    assert len({hashlib.sha256(p.read_bytes()).digest() for p in characters}) == 16
+    for character in characters:
+        assert character.stat().st_size < 150_000, character
+        with Image.open(character) as picture:
+            assert picture.format == "WEBP" and picture.size == (512, 512), character
+            assert picture.mode == "RGBA" and picture.getchannel("A").getextrema() == (0, 255), character
+            picture.verify()
     for file in files:
         markup = file.read_text(encoding="utf-8")
         doc = Document(markup)
@@ -88,8 +97,23 @@ def check(dist: bool = False) -> None:
             item = next(t for t in data["types"] if t["code"] == code)
             assert "".join(doc.title) == f'{item["name"]}（{code}）｜{TITLE}｜晩酌ラボ'
             group = next(g for g in data["groups"] if code.startswith(g["code"]))
-            for value in [item["name"], item["line"], code, group["name"], group["drinks"]]:
+            for value in [item["name"], item["line"], item["description"], item["reason"],
+                          item["tip"], code, group["name"], group["drinks"]]:
                 assert value in visible, (file, value)
+            portraits = [a for tag, a in doc.tags if tag == "img" and a.get("class") == "result-character"]
+            assert len(portraits) == 1
+            assert portraits[0]["src"] == item["character"]["src"]
+            assert portraits[0]["alt"] == item["character"]["alt"]
+            assert portraits[0]["width"] == portraits[0]["height"] == "512"
+            for index, axis in enumerate(data["axes"]):
+                side = axis["letters"].index(code[index])
+                assert axis["explanations"][side] in visible, (file, axis["id"])
+            reasons = [a for _, a in doc.tags if a.get("class") == "axis-reason"]
+            assert [r["data-axis"] for r in reasons] == [a["id"] for a in data["axes"]]
+            assert [r["data-label"] for r in reasons] == [
+                a["labels"][a["letters"].index(code[i])] for i, a in enumerate(data["axes"])]
+            votes = [a for _, a in doc.tags if a.get("class") == "axis-vote"]
+            assert len(votes) == 4 and all("hidden" in a for a in votes)
             opposite = "".join(next(x for x in a["letters"] if x != code[i]) for i, a in enumerate(data["axes"]))
             partner = next(t for t in data["types"] if t["code"] == opposite)
             assert partner["name"] in visible
@@ -97,6 +121,7 @@ def check(dist: bool = False) -> None:
                 assert recipe["name"] in visible
             ids = {a["id"]: a for _, a in doc.tags if a.get("id")}
             assert "hidden" in ids["personal-result"]
+            assert "hidden" in ids["personal-explanation"] and "hidden" in ids["percentage-note"]
             assert "hidden" in ids["share-more"] and "hidden" in ids["threads-profile"]
             shared = parse_qs(urlparse(ids["share-x"]["href"]).query)
             assert shared["url"] == [expected] and "#" not in shared["url"][0]
@@ -108,7 +133,7 @@ def check(dist: bool = False) -> None:
                 relative = path.relative_to(root).as_posix()
                 assert is_public(relative), relative
                 assert hashlib.sha256(path.read_bytes()).digest() == hashlib.sha256((ROOT / relative).read_bytes()).digest(), relative
-    print("PASS: 18 pages, metadata/static content/links, 17 PNGs (1200x630)" +
+    print("PASS: 18 pages, metadata/static content/links, 16 unique characters + explanations, 17 PNGs (1200x630)" +
           ("; dist has no tools/fonts and all public bytes match the source." if dist else "."))
 
 

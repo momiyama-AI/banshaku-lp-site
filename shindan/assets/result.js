@@ -23,6 +23,23 @@ function showPercentages() {
   cta.classList.toggle('secondary', Boolean(percentages));
   cta.textContent = percentages ? 'もう一度診断する' : 'あなたも診断する';
   document.querySelector('#result-label').textContent = percentages ? 'あなたのつまみタイプ' : 'こんなつまみタイプも';
+  document.querySelector('.character-caption').innerHTML = percentages
+    ? 'あなたの晩酌を<br>キャラクターにすると' : 'この晩酌スタイルを<br>キャラクターにすると';
+  document.querySelector('#reason-title').textContent = percentages
+    ? 'あなたがこのタイプになった理由' : 'このタイプをつくる4つの好み';
+  document.querySelector('#personal-explanation').hidden = !percentages;
+  document.querySelector('#percentage-note').hidden = !percentages;
+  document.querySelectorAll('.axis-reason').forEach((row, index) => {
+    const vote = row.querySelector('.axis-vote');
+    vote.hidden = !percentages;
+    if (!percentages) {
+      vote.textContent = '';
+      return;
+    }
+    const count = percentages[index] === 100 ? 3 : 2;
+    vote.textContent = 'あなたの回答：3問中' + count + '問が「' + row.dataset.label + '」側。'
+      + (count === 3 ? 'この軸の回答は、すべて同じ側でした。' : 'もう一方も選びつつ、こちらが少し多い結果でした。');
+  });
   if (!percentages) return;
   document.querySelectorAll('.axis').forEach((row, index) => {
     const isLeft = code[index] === AXES[index].letters[0];

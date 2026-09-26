@@ -30,10 +30,16 @@ def read_data() -> tuple[dict, list, list]:
     assert [g["code"] for g in data["groups"]] == ["SC", "SG", "KC", "KG"]
     assert len(questions) == 12 and [q["id"] for q in questions] == list(range(1, 13))
     for axis in data["axes"]:
+        assert len(axis["explanations"]) == 2 and all(axis["explanations"])
         matching = [q for q in questions if q["axis"] == axis["id"]]
         assert len(matching) == 3
         assert all(len(q["choices"]) == 2 and
                    {c["letter"] for c in q["choices"]} == set(axis["letters"]) for q in matching)
+    for item in data["types"]:
+        assert all(item[key].strip() for key in ("description", "reason", "tip"))
+        assert item["character"]["src"] == f'/shindan/assets/characters/{item["code"].lower()}.webp'
+        assert item["character"]["alt"].strip()
+        assert (ROOT / item["character"]["src"].lstrip("/")).is_file()
     assert len(recipes) >= 3
     assert len({r["name"] for r in recipes}) == len(recipes), "Recipe names must be unique"
     for recipe in recipes:
@@ -165,7 +171,7 @@ def recipe_items(recipes: list) -> str:
 
 
 def result_page(item: dict, data: dict, recipes: list) -> str:
-    """Embed identity, drinks, compatibility, and social links in static HTML."""
+    """Embed the character and detailed interpretation without requiring JavaScript."""
     code, name, line = item["code"], item["name"], item["line"]
     group = next(g for g in data["groups"] if code.startswith(g["code"]))
     opposite = "".join(next(x for x in a["letters"] if x != code[i])
@@ -179,6 +185,17 @@ def result_page(item: dict, data: dict, recipes: list) -> str:
           <div class="axis-labels"><span class="axis-label">{left}</span><span class="axis-label">{right}</span></div>
           <div class="axis-track" role="meter" aria-label="{axis["name"]}：{left}の割合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
         </div>"""
+    reasons, preferences = "", []
+    for index, axis in enumerate(data["axes"]):
+        side = axis["letters"].index(code[index])
+        label = axis["labels"][side]
+        preferences.append(label)
+        reasons += f"""<div class="axis-reason" data-axis="{axis["id"]}" data-label="{label}">
+          <dt><span class="reason-letter" aria-hidden="true">{code[index]}</span>
+            <span>{axis["name"]}：{label}</span></dt>
+          <dd><p>{esc(axis["explanations"][side])}</p><p class="axis-vote" hidden></p></dd>
+        </div>"""
+    combination = " × ".join(preferences)
     path = f"/shindan/result/{code.lower()}/"
     url = absolute(path)
     share_text = f"私は【{name}】（{code}）でした！あなたの晩酌つまみタイプは？"
@@ -189,15 +206,32 @@ def result_page(item: dict, data: dict, recipes: list) -> str:
     <article class="result-hero" aria-labelledby="type-name">
       <div class="result-topline"><p id="result-label">こんなつまみタイプも</p>
         <span class="group-badge"><span aria-hidden="true">{group["emoji"]}</span>{group["name"]}</span></div>
-      <p class="result-code">{code}</p>
+      <div class="result-identity">
+        <div><p class="result-code">{code}</p><p class="character-caption">この晩酌スタイルを<br>キャラクターにすると</p></div>
+        <img class="result-character" src="{esc(item["character"]["src"])}"
+          alt="{esc(item["character"]["alt"])}" width="512" height="512" fetchpriority="high">
+      </div>
       <h1 id="type-name" class="result-name">{esc(name)}</h1>
       <p class="result-line">{esc(line)}</p>
       <dl class="drinks"><dt>合うお酒</dt><dd>{group["drinks"]}</dd></dl>
     </article>
     <div class="result-cta"><a id="diagnose-cta" class="button full" href="/shindan/">あなたも診断する</a></div>
+    <section class="section type-story" aria-labelledby="story-title">
+      <p class="eyebrow">YOUR STYLE</p><h2 id="story-title">{esc(name)}って<br>どんなタイプ？</h2>
+      <p class="type-description">{esc(item["description"])}</p>
+    </section>
     <section id="personal-result" class="section" aria-labelledby="personal-title" hidden>
       <p class="eyebrow">YOUR TASTE</p><h2 id="personal-title">あなたの結果</h2>{bars}
       <p class="small-note">各軸3問の回答から算出した、好みの割合です。</p>
+    </section>
+    <section class="section" aria-labelledby="reason-title">
+      <p class="eyebrow">WHY THIS TYPE?</p><h2 id="reason-title">このタイプをつくる4つの好み</h2>
+      <p class="preference-combination">{combination}</p>
+      <p class="type-reason">{esc(item["reason"])}</p>
+      <p id="personal-explanation" class="small-note" hidden>12問を4つの軸に分け、各3問で多かった側を1文字ずつ組み合わせた結果です。</p>
+      <dl class="axis-reasons">{reasons}</dl>
+      <p id="percentage-note" class="small-note" hidden>67%は3問中2問、100%は3問中3問がその側だったことを表します。好みの強さや性格を測る数値ではありません。</p>
+      <div class="style-tip"><h3>このタイプらしい、今夜の楽しみ方</h3><p>{esc(item["tip"])}</p></div>
     </section>
     <section class="section" aria-labelledby="recipes-title">
       <p class="eyebrow">TONIGHT'S MENU</p><h2 id="recipes-title">今夜のおすすめつまみ</h2>
@@ -286,16 +320,15 @@ def og_image(item: dict | None, group: dict | None, groups: list) -> Image.Image
     color = group["color"] if group else "#966016"
     draw.rectangle((0, 0, 1200, 18), fill=color)
     draw.rounded_rectangle((48, 46, 1152, 566), radius=22, fill="#fffdfa", outline="#d9d1c5", width=2)
-    # Plate and chopsticks stay behind the code, clear of all name and copy lines.
-    draw.ellipse((932, 88, 1095, 251), outline="#e9e2d7", width=3)
-    draw.ellipse((953, 109, 1074, 230), outline="#e9e2d7", width=2)
-    draw.line((1050, 72, 1100, 246), fill=color, width=7)
-    draw.line((1074, 69, 1124, 243), fill=color, width=7)
     if item:
+        with Image.open(ROOT / item["character"]["src"].lstrip("/")) as source:
+            character = source.convert("RGBA")
+            character.thumbnail((286, 286), Image.Resampling.LANCZOS)
+            canvas.paste(character, (842, 72), character)
         draw.text((78, 71), group["name"], font=font(29, True), fill=color)
         draw.text((76, 132), item["code"], font=font(94, True), fill=color)
-        name_font = font(61, True)
-        while draw.textlength(item["name"], font=name_font) > 1040:
+        name_font = font(56, True)
+        while draw.textlength(item["name"], font=name_font) > 736:
             name_font = font(name_font.size - 1, True)
         draw.text((78, 272), item["name"], font=name_font, fill="#162033")
         draw.line((78, 387, 1122, 387), fill="#d9d1c5", width=2)
@@ -305,6 +338,10 @@ def og_image(item: dict | None, group: dict | None, groups: list) -> Image.Image
         for i, line in enumerate(lines):
             draw.text((78, 414 + 43 * i), line, font=copy_font, fill="#39485b")
     else:
+        draw.ellipse((932, 88, 1095, 251), outline="#e9e2d7", width=3)
+        draw.ellipse((953, 109, 1074, 230), outline="#e9e2d7", width=2)
+        draw.line((1050, 72, 1100, 246), fill=color, width=7)
+        draw.line((1074, 69, 1124, 243), fill=color, width=7)
         draw.text((78, 76), "12問・約1分", font=font(29, True), fill=color)
         draw.text((74, 165), "晩酌つまみ", font=font(63, True), fill="#162033")
         draw.text((71, 247), "16タイプ診断", font=font(89, True), fill="#162033")

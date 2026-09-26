@@ -1,3 +1,19 @@
+shindan/assets/characters/kcra.webp
+shindan/assets/characters/kcro.webp
+shindan/assets/characters/kcta.webp
+shindan/assets/characters/kcto.webp
+shindan/assets/characters/kgra.webp
+shindan/assets/characters/kgro.webp
+shindan/assets/characters/kgta.webp
+shindan/assets/characters/kgto.webp
+shindan/assets/characters/scra.webp
+shindan/assets/characters/scro.webp
+shindan/assets/characters/scta.webp
+shindan/assets/characters/scto.webp
+shindan/assets/characters/sgra.webp
+shindan/assets/characters/sgro.webp
+shindan/assets/characters/sgta.webp
+shindan/assets/characters/sgto.webp
 shindan/assets/core.js
 shindan/assets/quiz.js
 shindan/assets/result.js
@@ -45,6 +61,7 @@ tools/shindan/README.md
 tools/shindan/VERIFICATION.md
 tools/shindan/browser-check.html
 tools/shindan/build.py
+tools/shindan/character-prompts.json
 tools/shindan/check.py
 tools/shindan/cloudflare-build.json
 tools/shindan/core.test.mjs
