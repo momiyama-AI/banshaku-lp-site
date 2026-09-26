@@ -30,6 +30,15 @@
 - キーボードの本文スキップで割合のハッシュが消えないこと、リンクコピーの成功表示を確認。
 - 本番LPのDOMでCloudflare Web Analyticsの自動挿入を確認。既存設定を維持し、HTMLで二重追加しない。
 
+## Cloudflareプレビュー
+
+- URL: https://feature-shindan.banshaku-lp-site.pages.dev/shindan/
+- 初回のGit連携ビルド・デプロイが成功。公開18ページでHTTP 200と必須メタ、既存LPと同一の計測タグが1個だけ挿入されることを確認。
+- 全17 PNGはHTTP 200、1200×630、リポジトリ内の画像とバイト一致。
+- build.py、core.test.mjs、NotoSansJP.ttf、README.mdの公開URLはすべて404。toolsは配信されない。
+- 既存トップページはHTTP 200。
+- 最終コミットのCloudflareチェック結果はPRのChecksから確認できる。
+
 ## 制限・未実施
 
 - X・Threadsへの実投稿はしていない。SNS側のOGPキャッシュ反映とOSの共有先アプリは未検証。

@@ -59,7 +59,7 @@ def page(title: str, description: str, path: str, image: str, content: str,
     """Render the shared accessible shell, metadata, navigation, and footer."""
     url = absolute(path)
     og = absolute("/shindan/og/" + image + ".png")
-    module = f'<script type="module" src="/shindan/assets/{script}.js"></script>' if script else ""
+    module = f'  <script type="module" src="/shindan/assets/{script}.js"></script>' if script else ""
     return f"""<!doctype html>
 <html lang="ja">
 <head>
@@ -84,7 +84,7 @@ def page(title: str, description: str, path: str, image: str, content: str,
   <meta name="twitter:description" content="{esc(description)}">
   <meta name="twitter:image" content="{og}">
   <link rel="stylesheet" href="/shindan/assets/style.css">
-  {module}
+{module}
 </head>
 <body {attrs}>
   <a class="skip" href="#main">本文へスキップ</a>

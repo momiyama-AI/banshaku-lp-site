@@ -12,5 +12,7 @@ if __name__ == "__main__":
     for remote, local in [("NotoSansJP%5Bwght%5D.ttf", "NotoSansJP.ttf"), ("OFL.txt", "OFL.txt")]:
         with urlopen(SOURCE + remote, timeout=60) as response:
             content = response.read()
+        if local == "OFL.txt":
+            content = ("\n".join(line.rstrip() for line in content.decode("utf-8").splitlines()) + "\n").encode("utf-8")
         (DEST / local).write_bytes(content)
         print(local, len(content), "bytes; SHA256", hashlib.sha256(content).hexdigest())
