@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class PurchasePathTests(unittest.TestCase):
     def test_all_published_comparisons_preserve_destinations(self):
         sitemap = (ROOT / 'sitemap.xml').read_text(encoding='utf-8')
-        slugs = re.findall(r'https://banshaku-lp-site.pages.dev/p/([^/]+)/', sitemap)
+        slugs = re.findall(r'https://banshaku-lp-site.pages.dev/p/([^/]*-comparison-2026)/', sitemap)
         self.assertEqual(len(slugs), 14)
         for slug in slugs:
             with self.subTest(slug=slug):

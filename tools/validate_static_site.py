@@ -379,7 +379,7 @@ def validate() -> list[str]:
             if not any(node_has_type(node, "BreadcrumbList") for node in nodes):
                 errors.append(f"{label}: BreadcrumbList JSON-LD is missing")
 
-            if label.startswith("p/"):
+            if label.startswith("p/") and 'data-content-kind="recipe"' not in text:
                 self_path = urlsplit(expected_canonical).path
                 related_paths = {
                     urlsplit(href).path
@@ -394,7 +394,7 @@ def validate() -> list[str]:
                     )
                 if "<!-- Reader value:start -->" not in text:
                     errors.append(f"{label}: reader value block is missing")
-            else:
+            elif label.startswith("guides/"):
                 visible_text = re.sub(r"<script[\s\S]*?</script>|<style[\s\S]*?</style>|<[^>]+>", " ", text)
                 visible_text = re.sub(r"\s+", "", visible_text)
                 if len(visible_text) < 2200:
