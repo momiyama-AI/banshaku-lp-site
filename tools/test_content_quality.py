@@ -28,6 +28,14 @@ class ContentQualityTests(unittest.TestCase):
         self.assertEqual(listed, expected)
         self.assertIn('ページの改稿日とは異なります', register)
 
+    def test_hot_sandwich_times_are_not_cross_brand_speed_rankings(self):
+        html = (ROOT / 'p/hot-sandwich-maker-comparison-2026/index.html').read_text(encoding='utf-8')
+        timing_row = re.search(r'<th scope="row">焼き時間目安</th>(.*?)</tr>', html, re.S)[1]
+        self.assertNotRegex(timing_row, r'(?:recolte|Toffy|Vitantonio)より|[0-9０-９]+分半(?:長い|短い)|3機種で最短')
+        self.assertIn('条件をそろえた他機種との所要時間比較ではない', timing_row)
+        self.assertNotIn('短時間加熱との引き換え', html)
+        self.assertIn('冷めてからプレートを拭く手入れを前提に選ぶ', html)
+
     def test_key_guides_retain_specific_decision_limits(self):
         expected = {
             'compact-air-fryer-comparison-2026': ('生産終了', '保証', '部品', '買い足さなくてよい'),
