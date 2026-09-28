@@ -88,7 +88,7 @@ test('only strict 67/100 hashes expose personal percentages', () => {
   }
 });
 
-test('X and Threads share the canonical hash-free result with the exact text', () => {
+test('X and Threads share the supplied result URL without query/hash and with the exact text', () => {
   const result = shareLinks('冷奴ミニマリスト', 'SCRO', 'https://example.test/shindan/result/scro/?utm=x#p=67-100-67-100');
   assert.equal(result.url, 'https://example.test/shindan/result/scro/');
   assert.equal(result.text, '私は【冷奴ミニマリスト】（SCRO）でした！あなたの晩酌つまみタイプは？');

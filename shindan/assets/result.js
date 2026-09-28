@@ -4,8 +4,9 @@ import { AXES, parsePercentages, recommendRecipes, shareLinks } from './core.js'
 const THREADS_PROFILE_URL = '';
 const code = document.body.dataset.code;
 const name = document.querySelector('#type-name').textContent;
-const canonical = document.querySelector('link[rel="canonical"]').href;
-const links = shareLinks(name, code, canonical);
+// Share the deployment being viewed: preview pages may not exist in production yet.
+// The canonical metadata remains the stable production URL for search engines.
+const links = shareLinks(name, code, window.location.href);
 const status = document.querySelector('#share-status');
 
 document.querySelector('.skip').addEventListener('click', event => {

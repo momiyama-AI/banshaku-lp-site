@@ -70,9 +70,10 @@ export function parsePercentages(hash) {
   return hash.slice(3).split('-').map(Number);
 }
 
-export function shareLinks(name, code, canonical) {
+/** Share the current result page without personal percentages or tracking queries. */
+export function shareLinks(name, code, pageUrl) {
   if (!isTypeCode(code)) throw new TypeError('Invalid type code.');
-  const clean = new URL(canonical);
+  const clean = new URL(pageUrl);
   clean.hash = '';
   clean.search = '';
   const url = clean.href;

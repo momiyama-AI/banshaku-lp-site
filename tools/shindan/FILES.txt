@@ -71,4 +71,5 @@ tools/shindan/fonts/OFL.txt
 tools/shindan/integration-proposal.diff
 tools/shindan/package_site.py
 tools/shindan/quiz.test.mjs
+tools/shindan/result.test.mjs
 tools/shindan/test_package.py

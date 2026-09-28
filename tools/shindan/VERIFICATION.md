@@ -10,7 +10,7 @@
 
 ## 実行結果
 
-- Node 24.19: `node --test tools/shindan/core.test.mjs tools/shindan/quiz.test.mjs` — 12テスト成功。
+- Node 24.19: `node --test tools/shindan/core.test.mjs tools/shindan/quiz.test.mjs tools/shindan/result.test.mjs` — 14テスト成功。
 - 全4096回答を独立した多数決の期待値と比較。16コードがそれぞれ256回出現。割合は67または100。
 - 相性の全反転と二重反転、味8・食べ方4・手間2・冒険度1の順序、同点のデータ順、3品の重複なしを確認。
 - 通常は800ms待機、reduced-motionは待機なし、回答の選び直し、履歴復帰、読み込み失敗を確認。
@@ -49,6 +49,15 @@
 - build.py、core.test.mjs、NotoSansJP.ttf、README.mdの公開URLはすべて404。toolsは配信されない。
 - 既存トップページはHTTP 200。
 - 最終コミットのCloudflareチェック結果はPRのChecksから確認できる。
+
+## 共有URLの修正
+
+- 2026-09-28に本番の `/shindan/result/kcto/` と `/shindan/` が404、同じパスのブランチプレビューが200であることを確認。PRは未マージ。
+- 原因はブラウザーの共有先に本番固定のcanonicalを使っていたこと。閲覧中のページURLからクエリとハッシュを除いたURLへ修正。
+- 全16タイプ×本番・ブランチプレビュー・固有デプロイURLで、X・Threads・コピー・OS共有の送信内容が同じ公開環境を指すことをNodeで検証。
+- クリップボードが使えない場合の手動コピー欄も、閲覧中のURLを維持することを確認。
+- 360px・ライト／ダークの132パターンを再実行し、X・Threadsの共有先ホスト一致とクエリ／ハッシュ除外も成功。
+- 本番固定のcanonicalとOGPメタは維持。本番URLそのものの有効化は、当初の「マージしない」指定を変更して本番公開する段階で行う。
 
 ## 制限・未実施
 

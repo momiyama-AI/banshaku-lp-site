@@ -102,7 +102,11 @@
               if (doc.querySelector('#reason-title').textContent.includes('あなた')) throw new Error('Stale personal title');
             }
             if (doc.querySelectorAll('#recipes li').length !== 3) throw new Error('Missing recipes');
-            if (new URL(doc.querySelector('#share-x').href).searchParams.get('url').includes('#')) throw new Error('Hash leaked');
+            const sharedUrl = new URL(doc.querySelector('#share-x').href).searchParams.get('url');
+            const expectedShareUrl = win.location.origin + '/shindan/result/' + code.toLowerCase() + '/';
+            if (sharedUrl !== expectedShareUrl) throw new Error('Share URL must point to the current deployment: ' + sharedUrl);
+            const threadText = new URL(doc.querySelector('#share-threads').href).searchParams.get('text');
+            if (!threadText.endsWith('\n' + expectedShareUrl)) throw new Error('Threads uses the wrong deployment');
           }
           results.push(result);
         }

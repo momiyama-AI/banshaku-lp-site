@@ -45,12 +45,14 @@ URLには個々の回答を持たないため、「Q1でレモンを選んだか
 python -m pip install Pillow
 python tools/shindan/build.py
 python tools/shindan/check.py
-node --test tools/shindan/core.test.mjs tools/shindan/quiz.test.mjs
+node --test tools/shindan/core.test.mjs tools/shindan/quiz.test.mjs tools/shindan/result.test.mjs
 python tools/shindan/test_package.py
 ~~~
 
-`build.py` の `BASE_URL` が本番URLの唯一の定義です。canonical・OGP・共有URLはここから生成されます。
-プレビューでもcanonicalと共有先は本番URLです。マージ前は本番の `/shindan/` がまだ公開されていない点に注意してください。
+`build.py` の `BASE_URL` が本番URLの唯一の定義です。canonical・OGP・静的HTMLの共有リンクはここから生成されます。
+ブラウザー上の共有ボタンは、閲覧中のページのURLからクエリとハッシュを除いて共有します。
+そのためプレビューではプレビューURL、本番では本番URLになり、未公開の本番URLへ送られません。
+canonicalとOGPは本番URLを維持します。SNSクローラー向けのOGP画像も含め、本番URLでの公開にはPRのマージと本番デプロイが必要です。
 
 Noto Sans JPは `tools/shindan/fonts/NotoSansJP.ttf` に同梱しています。フォントを復元する場合:
 
@@ -95,6 +97,7 @@ CIでPillowやフォントを取得する必要はありません。事前生成
 
 - `core.test.mjs`: 全4096通りを独立した多数決の期待値と比較、16コード各256回、割合67/100、反転、3品の重複なし、軸の重み、同点順、入力異常、ハッシュ、共有URL。
 - `quiz.test.mjs`: 通常の800ms待機、reduced-motion時の即時遷移、回答変更、戻る操作、データ取得失敗、ブラウザーの履歴復帰。
+- `result.test.mjs`: 全16タイプ×本番・ブランチプレビュー・固有デプロイURLについて、X・Threads・コピー・OS共有のすべてが閲覧中のURLを使うことと、クリップボード利用不可時の手動コピーを確認。
 - `check.py`: 18ページの必須メタ、絶対OGP URL、17枚のPNG寸法、16種の透過キャラクター画像と対応・寸法・サイズ、静的な特徴と4軸の説明・相性・おすすめ、内部リンク、外部コード不使用。
 - `check.py --dist`: 上記に加え、ツール・Python・フォントの混入防止と元ファイルとのバイト一致。
 - `test_package.py`: 新規スクリプトのないmain相当のfixtureで、公開ファイルの保持とツール除外。
@@ -104,6 +107,7 @@ CIでPillowやフォントを取得する必要はありません。事前生成
 テスト専用iframeを360×640にし、iframeの `color-scheme` から実際の `prefers-color-scheme` を切り替えます。
 トップと一覧、全16結果×ハッシュなし・2種類の正しいハッシュ・不正ハッシュをライト／ダークで検証（132パターン）。
 キャラクターの読み込みと対応、4軸それぞれの回答数・ラベル、ハッシュ変更時に古い個人向け説明が残らないことも確認します。
+X・Threadsの共有先が閲覧中のホストに一致し、クエリとハッシュを含まないことも検証します。
 本番用distにはこの検証ページを含めません。
 
 手動では開始→12問→結果、前の質問へ→選び直し、コピー、一覧・相性リンク、縦スクロールも確認してください。
