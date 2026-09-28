@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>晩酌つまみ16タイプ診断｜晩酌ラボ</title>
+  <meta name="description" content="12問・約1分。2択でわかる、あなたの晩酌つまみタイプ。全16タイプから好みと今夜のおすすめつまみを見つけよう。20歳以上の方が対象です。">
+  <link rel="canonical" href="https://banshaku-lp-site.pages.dev/shindan/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="晩酌ラボ">
+  <meta property="og:title" content="晩酌つまみ16タイプ診断｜晩酌ラボ">
+  <meta property="og:description" content="12問・約1分。2択でわかる、あなたの晩酌つまみタイプ。全16タイプから好みと今夜のおすすめつまみを見つけよう。20歳以上の方が対象です。">
+  <meta property="og:url" content="https://banshaku-lp-site.pages.dev/shindan/">
+  <meta property="og:image" content="https://banshaku-lp-site.pages.dev/shindan/og/top.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="晩酌つまみ16タイプ診断｜晩酌ラボ">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="晩酌つまみ16タイプ診断｜晩酌ラボ">
+  <meta name="twitter:description" content="12問・約1分。2択でわかる、あなたの晩酌つまみタイプ。全16タイプから好みと今夜のおすすめつまみを見つけよう。20歳以上の方が対象です。">
+  <meta name="twitter:image" content="https://banshaku-lp-site.pages.dev/shindan/og/top.png">
+  <link rel="stylesheet" href="/shindan/assets/style.css">
+  <script type="module" src="/shindan/assets/quiz.js"></script>
+</head>
+<body >
+  <a class="skip" href="#main">本文へスキップ</a>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="/">晩酌ラボ</a>
+    <a class="header-link" href="/shindan/types/">全16タイプ</a>
+  </div></header>
+  <main id="main" class="" tabindex="-1">
+    <section id="intro">
+      <div class="intro-hero">
+        <p class="eyebrow">BANSHAKU LAB / FIND YOUR TASTE</p>
+        <h1>晩酌つまみ<br><span class="hero-number">16</span>タイプ診断</h1>
+        <p class="lead">唐揚げにレモン、かける？<br>いつもの選び方に、あなたらしさがある。</p>
+        <div class="facts"><span class="time-tag">12問・約1分</span></div>
+        <p class="age-note">20歳以上の方を対象としています</p>
+        <button id="start" class="button full" type="button" disabled>読み込み中…</button>
+        <p class="small-note">直感で2択に答えるだけ。登録は不要です。</p>
+        <div id="load-error" class="error" role="alert" hidden>設問を読み込めませんでした。通信状態を確認してお試しください。</div>
+        <button id="retry" class="button secondary full" type="button" hidden>もう一度読み込む</button>
+        <noscript><p class="error">診断にはJavaScriptを有効にしてください。<a href="/shindan/types/">全16タイプの一覧</a>はそのままご覧いただけます。</p></noscript>
+      </div>
+      <div class="group-preview" aria-label="4つのグループ"><div class="mini-group" style="--group-color:#294c70;--group-dark:#98bcdf"><span aria-hidden="true">🥢</span><strong>小鉢派</strong></div><div class="mini-group" style="--group-color:#176b4d;--group-dark:#8cd7b5"><span aria-hidden="true">🥗</span><strong>ヘルシー派</strong></div><div class="mini-group" style="--group-color:#893f56;--group-dark:#eca1b8"><span aria-hidden="true">🧀</span><strong>バー派</strong></div><div class="mini-group" style="--group-color:#966016;--group-dark:#efbd73"><span aria-hidden="true">🍺</span><strong>酒場派</strong></div></div>
+      <div class="intro-tail"><a href="/shindan/types/">あなたはどのタイプ？ 全16タイプを見る →</a>
+        <p class="small-note">つまみの好みを楽しむ診断です。回答は保存・送信しません。</p></div>
+    </section>
+    <section id="quiz" class="quiz-card" aria-labelledby="question" hidden>
+      <div class="quiz-meta"><span id="counter">Q1 / 12</span><span class="quiz-hint">直感で選んでください</span></div>
+      <progress id="progress" max="12" value="1" aria-label="全12問中1問目"></progress>
+      <h1 id="question" tabindex="-1"></h1>
+      <div id="choices" role="group" aria-labelledby="question"></div>
+      <button id="back" class="back-button" type="button" disabled>← 前の質問へ</button>
+    </section>
+    <section id="pending" class="pending" hidden aria-live="polite">
+      <div class="pending-dot" aria-hidden="true"></div>
+      <h1 id="pending-title" tabindex="-1">判定中…</h1>
+      <p class="lead">今夜の好みを、ひとつのタイプに。</p>
+    </section></main>
+  <footer><p>お酒は20歳になってから。飲酒運転は法律で禁止されています。</p>
+    <p>運営：晩酌ラボ（<a href="https://x.com/banshaku_lab" target="_blank" rel="noopener noreferrer">@banshaku_lab</a>）</p>
+    <a href="/">晩酌ラボのトップへ</a>
+  </footer>
+</body>
+</html>

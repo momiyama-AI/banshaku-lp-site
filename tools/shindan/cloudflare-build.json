@@ -1,0 +1,13 @@
+{
+  "project": "banshaku-lp-site",
+  "before": {
+    "build_command": "",
+    "destination_dir": "/",
+    "root_dir": ""
+  },
+  "after": {
+    "build_command": "python3 -c \"from pathlib import Path; import shutil,subprocess; o=Path('dist'); paths=subprocess.check_output(['git','ls-files','-z']).decode('utf-8').split(chr(0)); files=[Path(s) for s in paths if s and Path(s).parts[0] not in ('tools','dist','node_modules','functions') and not any(p.startswith('.') and p!='.well-known' for p in Path(s).parts)]; [( (o/p).parent.mkdir(parents=True,exist_ok=True),shutil.copy2(p,o/p)) for p in files]\"",
+    "destination_dir": "dist",
+    "root_dir": ""
+  }
+}

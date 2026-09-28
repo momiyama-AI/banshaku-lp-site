@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<title>診断ローカル表示検証（配信対象外）</title>
+<style>
+  body { margin: 12px; font: 13px sans-serif; color: #152136; background: #ddd; }
+  label { display: block; margin-bottom: 8px; }
+  button, select { min-height: 36px; }
+  iframe { display: block; width: 360px; height: 640px; border: 0; color-scheme: light; }
+  pre { max-width: 800px; white-space: pre-wrap; }
+</style>
+<h1>360×640 表示検証</h1>
+<label>配色 <select id="theme"><option value="light">ライト</option><option value="dark">ダーク</option></select></label>
+<label>ページ <select id="page"><option value="/shindan/">トップ</option><option value="/shindan/types/">一覧</option></select></label>
+<button id="run">全ページの幅・結果表示を検証</button>
+<p id="status">準備中</p>
+<iframe id="preview" title="360pxの診断プレビュー" src="/shindan/"></iframe>
+<pre id="report"></pre>
+<script type="module">
+  const frame = document.querySelector('#preview');
+  const theme = document.querySelector('#theme');
+  const page = document.querySelector('#page');
+  const status = document.querySelector('#status');
+  const report = document.querySelector('#report');
+  const data = await (await fetch('/shindan/data/types.json')).json();
+  for (const type of data.types) {
+    const option = document.createElement('option');
+    option.value = '/shindan/result/' + type.code.toLowerCase() + '/';
+    option.textContent = type.code + ' ' + type.name;
+    page.append(option);
+  }
+  let navigation = 0;
+  const load = path => new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('Load timed out: ' + path)), 8000);
+    frame.onload = () => {
+      clearTimeout(timeout);
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    };
+    const target = new URL(path, location.href);
+    target.searchParams.set('check', String(++navigation));
+    frame.src = target.href;
+  });
+  theme.onchange = () => { frame.style.colorScheme = theme.value; };
+  page.onchange = () => load(page.value);
+  status.textContent = '準備完了';
+  document.querySelector('#run').onclick = async () => {
+    const results = [];
+    try {
+      for (const color of ['light', 'dark']) {
+        frame.style.colorScheme = color;
+        theme.value = color;
+        const routes = ['/shindan/', '/shindan/types/', ...data.types.flatMap(type => {
+          const path = '/shindan/result/' + type.code.toLowerCase() + '/';
+          return [path, path + '#p=67-100-67-100', path + '#p=100-67-100-67', path + '#p=66-100-67-100'];
+        })];
+        for (const path of routes) {
+          status.textContent = color + ' ' + path;
+          await load(path);
+          const doc = frame.contentDocument;
+          const win = frame.contentWindow;
+          const result = {
+            color, path,
+            width: doc.documentElement.clientWidth,
+            scroll: doc.documentElement.scrollWidth,
+            dark: win.matchMedia('(prefers-color-scheme: dark)').matches,
+          };
+          if (result.width !== result.scroll) throw new Error('Horizontal overflow: ' + path);
+          if (result.dark !== (color === 'dark')) throw new Error('Theme did not apply: ' + color);
+          if (path.includes('/result/')) {
+            const valid = path.includes('#p=67-') || path.includes('#p=100-');
+            if (doc.querySelector('#personal-result').hidden === valid) throw new Error('Incorrect bars: ' + path);
+            const bottom = doc.querySelector('.result-line').getBoundingClientRect().bottom;
+            result.heroBottom = Math.round(bottom);
+            if (bottom > 640) throw new Error('Hero below first viewport: ' + path);
+            const portrait = doc.querySelector('.result-character');
+            if (!portrait.complete || portrait.naturalWidth !== 512) throw new Error('Missing character: ' + path);
+            if (portrait.getBoundingClientRect().bottom > 640) throw new Error('Character below first viewport: ' + path);
+            const code = doc.body.dataset.code;
+            const type = data.types.find(type => type.code === code);
+            if (!portrait.src.endsWith(type.character.src)) throw new Error('Wrong character: ' + code);
+            for (const key of ['description', 'reason', 'tip']) {
+              if (!doc.body.textContent.includes(type[key])) throw new Error('Missing detail: ' + key);
+            }
+            const votes = [...doc.querySelectorAll('.axis-vote')];
+            if (votes.length !== 4 || votes.some(vote => vote.hidden === valid)) throw new Error('Incorrect vote visibility');
+            if (valid) {
+              const percentages = path.split('#p=')[1].split('-').map(Number);
+              votes.forEach((vote, index) => {
+                const axis = data.axes[index];
+                const label = axis.labels[axis.letters.indexOf(code[index])];
+                const count = percentages[index] === 100 ? 3 : 2;
+                if (!vote.textContent.includes('3問中' + count + '問が「' + label + '」側')) throw new Error('Wrong reason: ' + code);
+              });
+              // A hash change must remove personal claims without a page reload.
+              await new Promise(resolve => {
+                win.addEventListener('hashchange', resolve, { once: true });
+                win.location.hash = 'invalid';
+              });
+              if (!doc.querySelector('#personal-result').hidden || votes.some(vote => !vote.hidden || vote.textContent)) {
+                throw new Error('Stale personal explanation after hash change');
+              }
+              if (doc.querySelector('#reason-title').textContent.includes('あなた')) throw new Error('Stale personal title');
+            }
+            if (doc.querySelectorAll('#recipes li').length !== 3) throw new Error('Missing recipes');
+            const sharedUrl = new URL(doc.querySelector('#share-x').href).searchParams.get('url');
+            const expectedShareUrl = win.location.origin + '/shindan/result/' + code.toLowerCase() + '/';
+            if (sharedUrl !== expectedShareUrl) throw new Error('Share URL must point to the current deployment: ' + sharedUrl);
+            const threadText = new URL(doc.querySelector('#share-threads').href).searchParams.get('text');
+            if (!threadText.endsWith('\n' + expectedShareUrl)) throw new Error('Threads uses the wrong deployment');
+          }
+          results.push(result);
+        }
+      }
+      status.textContent = 'PASS: ' + results.length + '件。横スクロールなし、配色・ハッシュ表示・ファーストビューを確認。';
+    } catch (error) {
+      status.textContent = 'FAIL: ' + error.message;
+    }
+    report.textContent = JSON.stringify(results, null, 2);
+  };
+</script>
+</html>
