@@ -202,6 +202,9 @@ def result_page(item: dict, data: dict, recipes: list) -> str:
     x = "https://x.com/intent/tweet?" + urlencode({
         "text": share_text, "url": url, "hashtags": "つまみ診断,晩酌ラボ", "via": "banshaku_lab"})
     threads = "https://www.threads.net/intent/post?" + urlencode({"text": share_text + "\n#つまみ診断\n" + url})
+    comparison_link = """
+      <div class="result-cta"><a class="button secondary full" href="/p/compact-air-fryer-comparison-2026/">買った唐揚げを温め直す道具を比較</a></div>
+      <p class="small-note">リンク先は広告・アフィリエイトリンクを含みます。</p>""" if code == "KGRO" else ""
     content = f"""
     <article class="result-hero" aria-labelledby="type-name">
       <div class="result-topline"><p id="result-label">こんなつまみタイプも</p>
@@ -236,7 +239,7 @@ def result_page(item: dict, data: dict, recipes: list) -> str:
     <section class="section" aria-labelledby="recipes-title">
       <p class="eyebrow">TONIGHT'S MENU</p><h2 id="recipes-title">今夜のおすすめつまみ</h2>
       <ol id="recipes" class="recipe-list">{recipe_items(recommend(code, recipes, data["axes"]))}</ol>
-      <p id="recipe-note" class="small-note" hidden>最新のレシピ情報を取得できなかったため、ページ作成時のおすすめを表示しています。</p>
+      <p id="recipe-note" class="small-note" hidden>最新のレシピ情報を取得できなかったため、ページ作成時のおすすめを表示しています。</p>{comparison_link}
     </section>
     <section class="section" aria-label="相性のよいタイプ"><div class="compatibility">
       <p class="eyebrow">相性◎の飲み仲間</p>
