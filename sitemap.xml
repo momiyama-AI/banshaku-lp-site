@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://banshaku-lp-site.pages.dev/</loc>
-    <lastmod>2026-09-27</lastmod>
+    <lastmod>2026-10-24</lastmod>
   </url>
   <url>
     <loc>https://banshaku-lp-site.pages.dev/about/</loc>
@@ -91,5 +91,77 @@
   <url>
     <loc>https://banshaku-lp-site.pages.dev/privacy/</loc>
     <lastmod>2026-07-24</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kcra/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kcro/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kcta/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kcto/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kgra/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kgro/</loc>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kgta/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/kgto/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/scra/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/scro/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/scta/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/scto/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/sgra/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/sgro/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/sgta/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/result/sgto/</loc>
+    <lastmod>2026-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://banshaku-lp-site.pages.dev/shindan/types/</loc>
+    <lastmod>2026-09-27</lastmod>
   </url>
 </urlset>
